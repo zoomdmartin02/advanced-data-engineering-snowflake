@@ -52,11 +52,12 @@ jobs:
           echo "$SNOWFLAKE_PRIVATE_KEY_BASE64" | base64 --decode > ./private_key.p8
 
       - name: Fetch latest changes to Snowflake
-        run: snow git fetch course_repo.public.advanced_data_engineering_snowflake \
-          --account $SNOWFLAKE_ACCOUNT \
-          --user $SNOWFLAKE_USER \
-          --private-key ./private_key.p8 \
-          --authenticator $SNOWFLAKE_AUTHENTICATOR
+        run: |
+          export SNOWFLAKE_ACCOUNT="${{ secrets.SNOWFLAKE_ACCOUNT }}"
+          export SNOWFLAKE_USER="${{ secrets.SNOWFLAKE_USER }}"
+          export SNOWFLAKE_PRIVATE_KEY_PATH="./private_key.p8"
+          export SNOWFLAKE_AUTHENTICATOR=$SNOWFLAKE_AUTHENTICATOR
+          snow git fetch course_repo.public.advanced_data_engineering_snowflake
 
       - name: Deploy templates to data environment
         run: |
