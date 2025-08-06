@@ -52,11 +52,19 @@ jobs:
           echo "$SNOWFLAKE_PRIVATE_KEY_BASE64" | base64 --decode > ./private_key.p8
 
       - name: Fetch latest changes to Snowflake
+        env:
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+          SNOWFLAKE_PRIVATE_KEY_PATH: ./private_key.p8
+          SNOWFLAKE_AUTHENTICATOR: SNOWFLAKE_JWT
         run: |
-          export SNOWFLAKE_ACCOUNT="${{ secrets.SNOWFLAKE_ACCOUNT }}"
-          export SNOWFLAKE_USER="${{ secrets.SNOWFLAKE_USER }}"
-          export SNOWFLAKE_PRIVATE_KEY_PATH="./private_key.p8"
-          export SNOWFLAKE_AUTHENTICATOR=$SNOWFLAKE_AUTHENTICATOR
+          # Export the environment variables to ensure snow CLI picks them up
+          export SNOWFLAKE_ACCOUNT
+          export SNOWFLAKE_USER
+          export SNOWFLAKE_PRIVATE_KEY_PATH
+          export SNOWFLAKE_AUTHENTICATOR
+      
+          # Run the fetch command
           snow git fetch course_repo.public.advanced_data_engineering_snowflake
 
       - name: Deploy templates to data environment
